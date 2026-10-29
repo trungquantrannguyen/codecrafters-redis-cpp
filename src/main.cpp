@@ -96,9 +96,23 @@ void handleClient(int client_fd)
     }
     else if (cmd == "SET" && command.size() > 2)
     {
+      if (command[3].size() > 0 && command[4].size() > 0)
+      {
+        std::string px = command[3];
+
+        std::transform(
+            px.begin(),
+            px.end(),
+            px.begin(),
+            [](unsigned char c)
+            {
+              return std::toupper(c);
+            });
+
+        storage[command[1]].expiry = std::stoll(command[4]);
+        storage[command[1]].setTime = getTimestamp();
+      }
       storage[command[1]].value = command[2];
-      storage[command[1]].expiry = std::stoll(command[4]);
-      storage[command[1]].setTime = getTimestamp();
       response = "+OK\r\n";
     }
     else if (cmd == "GET" && command.size() > 1)
@@ -106,7 +120,7 @@ void handleClient(int client_fd)
       if (storage[command[1]].value.size() > 0)
       {
 
-        if (getTimestamp() - storage[command[1]].setTime > storage[command[1]].expiry)
+        if (storage[command[1]].expiry && getTimestamp() - storage[command[1]].setTime > storage[command[1]].expiry)
         {
           response = "$-1\r\n";
           storage.erase(command[1]);
