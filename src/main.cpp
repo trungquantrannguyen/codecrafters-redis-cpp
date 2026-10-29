@@ -89,7 +89,8 @@ void handleClient(int client_fd)
     {
       if (storage[command[1]].size() > 0)
         response = "$" + std::to_string(storage[command[1]].size()) + "\r\n" + storage[command[1]] + "\r\n";
-      response = "$-1\r\n";
+      else
+        response = "$-1\r\n";
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
