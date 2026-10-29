@@ -10,8 +10,7 @@
 #include <thread>
 #include <cctype>
 #include <algorithm>
-
-std::vector<std::string> parseRESP(const std::string &data);
+#include <vector>
 
 std::vector<std::string> parseRESP(const std::string &data)
 {
