@@ -11,6 +11,8 @@
 #include <cctype>
 #include <algorithm>
 
+std::vector<std::string> parseRESP(const std::string &data);
+
 std::vector<std::string> parseRESP(const std::string &data)
 {
   std::vector<std::string> command;
