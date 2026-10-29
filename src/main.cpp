@@ -8,6 +8,31 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <thread>
+#include <cctype>
+#include <algorithm>
+
+std::vector<std::string> parseRESP(const std::string &data)
+{
+  std::vector<std::string> command;
+  size_t pos = 0;
+
+  size_t end = data.find("\r\n", pos);
+  int count = std::stoi(data.substr(pos + 1, end - pos - 1));
+  pos = end + 2;
+
+  for (int i = 0; i < count; i++)
+  {
+    end = data.find("\r\n", pos);
+    int length = std::stoi(data.substr(pos + 1, end - pos - 1));
+    pos = end + 2;
+
+    std::string value = data.substr(pos, length);
+    command.push_back(value);
+
+    pos += length + 2;
+  }
+  return command;
+}
 
 void handleClient(int client_fd)
 {
@@ -23,9 +48,35 @@ void handleClient(int client_fd)
       break;
     }
 
-    const char *response = "+PONG\r\n";
+    std::string data(buffer, bytes_received);
 
-    send(client_fd, response, strlen(response), 0);
+    std::vector<std::string> command = parseRESP(data);
+
+    if (command.empty())
+      continue;
+    std::string cmd = command[0];
+
+    std::transform(
+        cmd.begin(),
+        cmd.end(),
+        cmd.begin(),
+        [](unsigned char c)
+        {
+          return std::toupper(c);
+        });
+
+    std::string response;
+
+    if (cmd == "PING")
+    {
+      response = "+PONG\r\n";
+    }
+    else if (cmd == "ECHO")
+    {
+      response = "$" + std::to_string(command[1].size()) + "\r\n" + command[1] + "\r\n";
+    }
+
+    send(client_fd, response.c_str(), response.size(), 0);
   }
 
   close(client_fd);
