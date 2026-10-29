@@ -11,8 +11,12 @@
 #include <cctype>
 #include <algorithm>
 #include <vector>
+#include <unordered_map>
 
-std::vector<std::string> parseRESP(const std::string &data)
+std::unordered_map<std::string, std::string> storage;
+
+std::vector<std::string>
+parseRESP(const std::string &data)
 {
   std::vector<std::string> command;
   size_t pos = 0;
@@ -72,9 +76,20 @@ void handleClient(int client_fd)
     {
       response = "+PONG\r\n";
     }
-    else if (cmd == "ECHO")
+    else if (cmd == "ECHO" && command.size() > 1)
     {
       response = "$" + std::to_string(command[1].size()) + "\r\n" + command[1] + "\r\n";
+    }
+    else if (cmd == "SET" && command.size() > 2)
+    {
+      storage[command[1]] = command[2];
+      response = "+OK\r\n";
+    }
+    else if (cmd == "GET" && command.size() > 1)
+    {
+      if (storage[command[1]].size() > 0)
+        response = "$" + std::to_string(storage[command[1]].size()) + "\r\n" + storage[command[1]] + "\r\n";
+      response = "$-1\r\n";
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
