@@ -13,7 +13,21 @@
 #include <vector>
 #include <unordered_map>
 
-std::unordered_map<std::string, std::string> storage;
+struct KeyData
+{
+  std::string value;
+  long long expiry;
+  long long setTime;
+};
+
+std::unordered_map<std::string, KeyData> storage;
+
+long long getTimestamp()
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             std::chrono::system_clock::now().time_since_epoch())
+      .count();
+}
 
 std::vector<std::string>
 parseRESP(const std::string &data)
@@ -82,13 +96,24 @@ void handleClient(int client_fd)
     }
     else if (cmd == "SET" && command.size() > 2)
     {
-      storage[command[1]] = command[2];
+      storage[command[1]].value = command[2];
+      storage[command[1]].expiry = std::stoll(command[4]);
+      storage[command[1]].setTime = getTimestamp();
       response = "+OK\r\n";
     }
     else if (cmd == "GET" && command.size() > 1)
     {
-      if (storage[command[1]].size() > 0)
-        response = "$" + std::to_string(storage[command[1]].size()) + "\r\n" + storage[command[1]] + "\r\n";
+      if (storage[command[1]].value.size() > 0)
+      {
+
+        if (getTimestamp() - storage[command[1]].setTime > storage[command[1]].expiry)
+        {
+          response = "$-1\r\n";
+          storage.erase(command[1]);
+        }
+        else
+          response = "$" + std::to_string(storage[command[1]].value.size()) + "\r\n" + storage[command[1]].value + "\r\n";
+      }
       else
         response = "$-1\r\n";
     }
