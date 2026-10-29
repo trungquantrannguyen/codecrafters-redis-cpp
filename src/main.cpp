@@ -9,6 +9,14 @@
 #include <netdb.h>
 #include <thread>
 
+void handleClient(int client_fd)
+{
+  char buffer[1024];
+  int bytes_receives = recv(client_fd, buffer, sizeof(buffer), 0);
+  const char *response = "+PONG\r\n";
+  send(client_fd, response, strlen(response), 0);
+}
+
 int main(int argc, char **argv)
 {
   // Flush after every std::cout / std::cerr
@@ -69,12 +77,4 @@ int main(int argc, char **argv)
   close(server_fd);
 
   return 0;
-}
-
-void handleClient(int client_fd)
-{
-  char buffer[1024];
-  int bytes_receives = recv(client_fd, buffer, sizeof(buffer), 0);
-  const char *response = "+PONG\r\n";
-  send(client_fd, response, strlen(response), 0);
 }
