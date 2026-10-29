@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
   while (true)
   {
-    std::thread(handleClient, client_fd);
+    std::thread(handleClient, client_fd).detach();
   }
 
   close(server_fd);
