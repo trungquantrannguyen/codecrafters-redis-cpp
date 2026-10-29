@@ -94,25 +94,34 @@ void handleClient(int client_fd)
     {
       response = "$" + std::to_string(command[1].size()) + "\r\n" + command[1] + "\r\n";
     }
-    else if (cmd == "SET" && command.size() > 2)
+    else if (cmd == "SET" && command.size() >= 3)
     {
-      if (command[3].size() > 0 && command[4].size() > 0)
+      KeyData data{
+          command[2], 0, 0};
+      if (command.size() == 5)
       {
-        std::string px = command[3];
+        std::string option = command[3];
 
         std::transform(
-            px.begin(),
-            px.end(),
-            px.begin(),
+            option.begin(),
+            option.end(),
+            option.begin(),
             [](unsigned char c)
             {
               return std::toupper(c);
             });
+        if (option == "PX")
+        {
+          data.expiry = std::stoll(command[4]);
+        }
+        if (option == "EX")
+        {
+          data.expiry = std::stoll(command[4]) * 1000;
+        }
 
-        storage[command[1]].expiry = std::stoll(command[4]);
-        storage[command[1]].setTime = getTimestamp();
+        data.setTime = getTimestamp();
       }
-      storage[command[1]].value = command[2];
+      storage[command[1]] = data;
       response = "+OK\r\n";
     }
     else if (cmd == "GET" && command.size() > 1)
@@ -120,7 +129,7 @@ void handleClient(int client_fd)
       if (storage[command[1]].value.size() > 0)
       {
 
-        if (storage[command[1]].expiry && getTimestamp() - storage[command[1]].setTime > storage[command[1]].expiry)
+        if (storage[command[1]].expiry > 0 && getTimestamp() - storage[command[1]].setTime > storage[command[1]].expiry)
         {
           response = "$-1\r\n";
           storage.erase(command[1]);
