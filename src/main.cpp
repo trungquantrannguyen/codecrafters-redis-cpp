@@ -11,29 +11,6 @@
 #include <cctype>
 #include <algorithm>
 
-std::vector<std::string> parseRESP(const std::string &data)
-{
-  std::vector<std::string> command;
-  size_t pos = 0;
-
-  size_t end = data.find("\r\n", pos);
-  int count = std::stoi(data.substr(pos + 1, end - pos - 1));
-  pos = end + 2;
-
-  for (int i = 0; i < count; i++)
-  {
-    end = data.find("\r\n", pos);
-    int length = std::stoi(data.substr(pos + 1, end - pos - 1));
-    pos = end + 2;
-
-    std::string value = data.substr(pos, length);
-    command.push_back(value);
-
-    pos += length + 2;
-  }
-  return command;
-}
-
 void handleClient(int client_fd)
 {
   char buffer[1024];
@@ -80,6 +57,29 @@ void handleClient(int client_fd)
   }
 
   close(client_fd);
+}
+
+std::vector<std::string> parseRESP(const std::string &data)
+{
+  std::vector<std::string> command;
+  size_t pos = 0;
+
+  size_t end = data.find("\r\n", pos);
+  int count = std::stoi(data.substr(pos + 1, end - pos - 1));
+  pos = end + 2;
+
+  for (int i = 0; i < count; i++)
+  {
+    end = data.find("\r\n", pos);
+    int length = std::stoi(data.substr(pos + 1, end - pos - 1));
+    pos = end + 2;
+
+    std::string value = data.substr(pos, length);
+    command.push_back(value);
+
+    pos += length + 2;
+  }
+  return command;
 }
 
 int main(int argc, char **argv)
