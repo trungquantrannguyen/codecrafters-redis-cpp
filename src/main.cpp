@@ -11,8 +11,6 @@
 
 void handleClient(int client_fd)
 {
-  char buffer[1024];
-  int bytes_receives = recv(client_fd, buffer, sizeof(buffer), 0);
   const char *response = "+PONG\r\n";
   send(client_fd, response, strlen(response), 0);
 }
@@ -66,7 +64,7 @@ int main(int argc, char **argv)
 
   // Uncomment the code below to pass the first stage
 
-    while (true)
+  while (true)
   {
     int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&client_addr_len);
     std::cout << "Client connected\n";
