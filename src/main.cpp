@@ -66,13 +66,8 @@ int main(int argc, char **argv)
 
   while (true)
   {
-    int client_fd =
-        accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&client_addr_len);
-    if (client_fd < 0)
-    {
-      std::cerr << "accept failed\n";
-      continue;
-    }
+    int client_fd = accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&client_addr_len);
+    std::cout << "Client connected\n";
     std::thread(handleClient, client_fd).detach();
   }
 
