@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <thread>
 
 int main(int argc, char **argv)
 {
@@ -62,13 +63,18 @@ int main(int argc, char **argv)
 
   while (true)
   {
-    char buffer[1024];
-    int bytes_receives = recv(client_fd, buffer, sizeof(buffer), 0);
-    const char *response = "+PONG\r\n";
-    send(client_fd, response, strlen(response), 0);
+    std::thread(handleClient, client_fd);
   }
 
   close(server_fd);
 
   return 0;
+}
+
+void handleClient(int client_fd)
+{
+  char buffer[1024];
+  int bytes_receives = recv(client_fd, buffer, sizeof(buffer), 0);
+  const char *response = "+PONG\r\n";
+  send(client_fd, response, strlen(response), 0);
 }
