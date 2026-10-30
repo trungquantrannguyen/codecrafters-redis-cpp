@@ -168,14 +168,14 @@ void handleClient(int client_fd)
         std::string key = command[1];
         int start = std::stoi(command[2]);
         int stop = std::stoi(command[3]);
-        if (stop >= dataList.size())
-        {
-          stop = dataList.size();
-        }
         if (start < dataList.size() && start < stop)
         {
           auto first = std::next(dataList.begin(), start);
           auto last = std::next(dataList.begin(), stop + 1);
+          if (stop >= dataList.size())
+          {
+            last = std::next(dataList.begin(), dataList.size());
+          }
           std::list<std::string> subLists(first, last);
           response = "*" + std::to_string(subLists.size()) + "\r\n";
           for (std::string subList : subLists)
