@@ -153,8 +153,12 @@ void handleClient(int client_fd)
     }
     else if (cmd == "RPUSH" && command.size() >= 3)
     {
-      listStorage[command[1]].list.push_front(command[2]);
-      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+      for (int i = 2; i < command.size() - 1; i++)
+      {
+
+        listStorage[command[1]].list.push_front(command[2]);
+        response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+      }
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
