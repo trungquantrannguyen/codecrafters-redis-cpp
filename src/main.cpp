@@ -171,7 +171,7 @@ void handleClient(int client_fd)
     else if (cmd == "LPOP" && command.size() >= 2)
     {
       int remove_amout = std::stoi(command[2]);
-
+      std::cout << "remove_amout" << remove_amout;
       if (std::stoi(command[2]) == 0)
         remove_amout = 1;
 
