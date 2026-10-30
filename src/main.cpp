@@ -177,7 +177,7 @@ void handleClient(int client_fd)
 
       response = "*" + std::to_string(data.size()) + "\r\n";
 
-      for (int i = 0; i < remove_amout; i++)
+      for (int i = 0; i < remove_amout - 1; i++)
       {
         std::string popValue = list_storage[command[1]].list.front();
         list_storage[command[1]]
