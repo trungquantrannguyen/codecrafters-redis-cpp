@@ -169,16 +169,16 @@ void handleClient(int client_fd)
         int start = std::stoi(command[2]);
         int stop = std::stoi(command[3]);
         if (start < 0)
-          start = data.size() + start;
+          start = dataList.size() + start;
         if (stop < 0)
-          stop = data.size() + stop;
+          stop = dataList.size() + stop;
         if (start < dataList.size() && start < stop)
         {
           if (stop >= dataList.size())
           {
-            stop = data.size();
+            stop = dataList.size();
           }
-          std::cout << "size" << data.size() << "\n";
+          std::cout << "Size" << dataList.size() << "\n";
           std::cout << "start" << start << "\n";
           std::cout << "stop" << stop << "\n";
           auto first = std::next(dataList.begin(), start);
