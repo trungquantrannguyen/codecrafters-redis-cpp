@@ -218,6 +218,10 @@ void handleClient(int client_fd)
         response = "*0\r\n";
       }
     }
+    else if (cmd == "LLEN" && command.size() >= 1)
+    {
+      response = ":" + listStorage[command[1]].list.size();
+    }
 
     send(client_fd, response.c_str(), response.size(), 0);
   }
