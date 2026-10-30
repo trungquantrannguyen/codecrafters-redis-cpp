@@ -174,11 +174,12 @@ void handleClient(int client_fd)
           stop = data.size() + stop;
         if (start < dataList.size() && start < stop)
         {
-
           if (stop >= dataList.size())
           {
             stop = data.size();
           }
+          std::cout << "start" << start;
+          std::cout << "stop" << stop;
           auto first = std::next(dataList.begin(), start);
           auto last = std::next(dataList.begin(), stop + 1);
 
@@ -189,8 +190,6 @@ void handleClient(int client_fd)
             std::string eleResponse = "$" + std::to_string(subList.size()) + "\r\n" + subList + "\r\n";
             response += eleResponse;
           }
-
-          printf("Response array: %s", response);
         }
         else
         {
