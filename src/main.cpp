@@ -182,7 +182,7 @@ void handleClient(int client_fd)
           std::cout << "start" << start << "\n";
           std::cout << "stop" << stop << "\n";
           auto first = std::next(dataList.begin(), start);
-          auto last = std::next(dataList.begin(), stop);
+          auto last = std::next(dataList.begin(), stop + 1);
 
           std::list<std::string> subLists(first, last);
           response = "*" + std::to_string(subLists.size()) + "\r\n";
