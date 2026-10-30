@@ -168,6 +168,14 @@ void handleClient(int client_fd)
       }
       response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
+    else if (cmd == "LPOP" && command.size() >= 3)
+    {
+      std::string data = listStorage[command[1]].list.front();
+      listStorage[command[1]]
+          .list.pop_front();
+
+      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+    }
     else if (cmd == "LRANGE" && command.size() >= 4)
     {
       if (listStorage[command[1]].list.empty() == 0)
