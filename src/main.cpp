@@ -168,7 +168,7 @@ void handleClient(int client_fd)
       }
       response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
-    else if (cmd == "LPOP" && command.size() >= 3)
+    else if (cmd == "LPOP" && command.size() >= 2)
     {
       std::string data = listStorage[command[1]].list.front();
       listStorage[command[1]]
