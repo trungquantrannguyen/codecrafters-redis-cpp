@@ -180,8 +180,8 @@ void handleClient(int client_fd)
           response = "*" + std::to_string(subLists.size()) + "\r\n";
           for (std::string subList : subLists)
           {
-            // response =+ "$" + "1\r\n" + subList + "\r\n";
-            response = +"$%d\r\n%s\r\n", subList.size(), subList;
+            std::string eleResponse = "$" + std::to_string(subList.size()) + "\r\n" + subList + "\r\n";
+            response += eleResponse;
           }
 
           printf("Response array: %s", response);
