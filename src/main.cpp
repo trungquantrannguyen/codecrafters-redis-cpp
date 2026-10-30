@@ -174,7 +174,7 @@ void handleClient(int client_fd)
       listStorage[command[1]]
           .list.pop_front();
 
-      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+      response = "$" + std::to_string(data.size()) + "\r\n" + data + "\r\n";
     }
     else if (cmd == "LRANGE" && command.size() >= 4)
     {
