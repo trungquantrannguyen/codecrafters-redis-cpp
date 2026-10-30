@@ -162,7 +162,7 @@ void handleClient(int client_fd)
     }
     else if (cmd == "LRANGE" && command.size() >= 4)
     {
-      if (listStorage[command[1]].list.empty() != 0)
+      if (listStorage[command[1]].list.empty() == 0)
       {
         std::list<std::string> dataList = listStorage[command[1]].list;
         std::string key = command[1];
