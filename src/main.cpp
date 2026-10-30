@@ -16,25 +16,25 @@
 #include <variant>
 #include <iterator>
 
-struct KeyData
+struct key_data
 {
   std::string value;
   long long expiry;
-  long long setTime;
+  long long set_time;
 };
 
-struct KeyList
+struct key_list
 {
   std::list<std::string> list;
 };
 
-std::unordered_map<std::string, KeyData>
-    dataStorage;
+std::unordered_map<std::string, key_data>
+    data_storage;
 
-std::unordered_map<std::string, KeyList>
-    listStorage;
+std::unordered_map<std::string, key_list>
+    list_storage;
 
-long long getTimestamp()
+long long get_timestamp()
 {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              std::chrono::system_clock::now().time_since_epoch())
@@ -42,7 +42,7 @@ long long getTimestamp()
 }
 
 std::vector<std::string>
-parseRESP(const std::string &data)
+parse_RESP(const std::string &data)
 {
   std::vector<std::string> command;
   size_t pos = 0;
@@ -81,7 +81,7 @@ void handleClient(int client_fd)
 
     std::string data(buffer, bytes_received);
 
-    std::vector<std::string> command = parseRESP(data);
+    std::vector<std::string> command = parse_RESP(data);
 
     if (command.empty())
       continue;
@@ -108,7 +108,7 @@ void handleClient(int client_fd)
     }
     else if (cmd == "SET" && command.size() >= 3)
     {
-      KeyData data{
+      key_data data{
           command[2], 0, 0};
       if (command.size() == 5)
       {
@@ -131,23 +131,23 @@ void handleClient(int client_fd)
           data.expiry = std::stoll(command[4]) * 1000;
         }
 
-        data.setTime = getTimestamp();
+        data.set_time = get_timestamp();
       }
-      dataStorage[command[1]] = data;
+      data_storage[command[1]] = data;
       response = "+OK\r\n";
     }
     else if (cmd == "GET" && command.size() > 1)
     {
-      if (dataStorage[command[1]].value.size() > 0)
+      if (data_storage[command[1]].value.size() > 0)
       {
 
-        if (dataStorage[command[1]].expiry > 0 && getTimestamp() - dataStorage[command[1]].setTime > dataStorage[command[1]].expiry)
+        if (data_storage[command[1]].expiry > 0 && get_timestamp() - data_storage[command[1]].set_time > data_storage[command[1]].expiry)
         {
           response = "$-1\r\n";
-          dataStorage.erase(command[1]);
+          data_storage.erase(command[1]);
         }
         else
-          response = "$" + std::to_string(dataStorage[command[1]].value.size()) + "\r\n" + dataStorage[command[1]].value + "\r\n";
+          response = "$" + std::to_string(data_storage[command[1]].value.size()) + "\r\n" + data_storage[command[1]].value + "\r\n";
       }
       else
         response = "$-1\r\n";
@@ -156,31 +156,40 @@ void handleClient(int client_fd)
     {
       for (int i = 2; i < command.size(); i++)
       {
-        listStorage[command[1]].list.push_back(command[i]);
+        list_storage[command[1]].list.push_back(command[i]);
       }
-      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+      response = ":" + std::to_string(list_storage[command[1]].list.size()) + "\r\n";
     }
     else if (cmd == "LPUSH" && command.size() >= 3)
     {
       for (int i = 2; i < command.size(); i++)
       {
-        listStorage[command[1]].list.push_front(command[i]);
+        list_storage[command[1]].list.push_front(command[i]);
       }
-      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+      response = ":" + std::to_string(list_storage[command[1]].list.size()) + "\r\n";
     }
     else if (cmd == "LPOP" && command.size() >= 2)
     {
-      std::string data = listStorage[command[1]].list.front();
-      listStorage[command[1]]
-          .list.pop_front();
+      int remove_amout = std::stoi(command[3]);
 
-      response = "$" + std::to_string(data.size()) + "\r\n" + data + "\r\n";
+      if (remove_amout > list_storage[command[1]].list.size())
+        remove_amout = list_storage[command[1]].list.size();
+
+      response = "*" + std::to_string(data.size()) + "\r\n";
+
+      for (int i = 0; i < remove_amout; i++)
+      {
+        std::string popValue = list_storage[command[1]].list.front();
+        list_storage[command[1]]
+            .list.pop_front();
+        response += "$" + std::to_string(popValue.size()) + "\r\n" + popValue + "\r\n";
+      }
     }
     else if (cmd == "LRANGE" && command.size() >= 4)
     {
-      if (listStorage[command[1]].list.empty() == 0)
+      if (list_storage[command[1]].list.empty() == 0)
       {
-        std::list<std::string> dataList = listStorage[command[1]].list;
+        std::list<std::string> dataList = list_storage[command[1]].list;
         std::string key = command[1];
         int start = std::stoi(command[2]);
         int stop = std::stoi(command[3]);
@@ -228,7 +237,7 @@ void handleClient(int client_fd)
     }
     else if (cmd == "LLEN" && command.size() >= 1)
     {
-      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+      response = ":" + std::to_string(list_storage[command[1]].list.size()) + "\r\n";
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
