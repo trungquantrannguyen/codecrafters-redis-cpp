@@ -220,7 +220,7 @@ void handleClient(int client_fd)
     }
     else if (cmd == "LLEN" && command.size() >= 1)
     {
-      response = ":" + listStorage[command[1]].list.size();
+      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
