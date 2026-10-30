@@ -172,7 +172,7 @@ void handleClient(int client_fd)
     {
       int remove_amout = std::stoi(command[2]);
 
-      if (remove_amout == 0)
+      if (std::stoi(command[2]) == 0)
         remove_amout = 1;
 
       if (remove_amout > list_storage[command[1]].list.size())
