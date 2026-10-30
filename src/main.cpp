@@ -168,13 +168,12 @@ void handleClient(int client_fd)
         std::string key = command[1];
         int start = std::stoi(command[2]);
         int stop = std::stoi(command[3]);
+        if (start < 0)
+          start = data.size() + start;
+        if (stop < 0)
+          stop = data.size() + stop;
         if (start < dataList.size() && start < stop)
         {
-
-          if (start < 0)
-            start = data.size() + start;
-          if (stop < 0)
-            stop = data.size() + stop;
 
           if (stop >= dataList.size())
           {
