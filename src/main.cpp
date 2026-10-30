@@ -170,14 +170,14 @@ void handleClient(int client_fd)
     }
     else if (cmd == "LPOP" && command.size() >= 2)
     {
-      int remove_amout = std::stoi(command[3]);
+      int remove_amout = std::stoi(command[2]);
 
       if (remove_amout > list_storage[command[1]].list.size())
         remove_amout = list_storage[command[1]].list.size();
 
       response = "*" + std::to_string(data.size()) + "\r\n";
 
-      for (int i = 0; i < remove_amout - 1; i++)
+      for (int i = 0; i < remove_amout; i++)
       {
         std::string popValue = list_storage[command[1]].list.front();
         list_storage[command[1]]
