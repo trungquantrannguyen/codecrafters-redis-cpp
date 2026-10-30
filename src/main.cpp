@@ -157,8 +157,8 @@ void handleClient(int client_fd)
       {
 
         listStorage[command[1]].list.push_front(command[2]);
-        response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
       }
+      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
