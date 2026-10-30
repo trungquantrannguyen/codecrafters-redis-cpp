@@ -175,7 +175,7 @@ void handleClient(int client_fd)
       if (command.size() == 3)
       {
         remove_amout = std::stoi(command[2]);
-        response = "*" + std::to_string(remove_amout) + "\r\n";
+        response = "";
       }
 
       if (remove_amout > list_storage[command[1]].list.size())
