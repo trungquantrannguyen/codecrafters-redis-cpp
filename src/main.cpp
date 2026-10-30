@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <vector>
 #include <unordered_map>
+#include <list>
+#include <variant>
 
 struct KeyData
 {
@@ -20,7 +22,16 @@ struct KeyData
   long long setTime;
 };
 
-std::unordered_map<std::string, KeyData> storage;
+struct KeyList
+{
+  std::list<std::string> list;
+};
+
+std::unordered_map<std::string, KeyData>
+    dataStorage;
+
+std::unordered_map<std::string, KeyList>
+    listStorage;
 
 long long getTimestamp()
 {
@@ -121,24 +132,29 @@ void handleClient(int client_fd)
 
         data.setTime = getTimestamp();
       }
-      storage[command[1]] = data;
+      dataStorage[command[1]] = data;
       response = "+OK\r\n";
     }
     else if (cmd == "GET" && command.size() > 1)
     {
-      if (storage[command[1]].value.size() > 0)
+      if (dataStorage[command[1]].value.size() > 0)
       {
 
-        if (storage[command[1]].expiry > 0 && getTimestamp() - storage[command[1]].setTime > storage[command[1]].expiry)
+        if (dataStorage[command[1]].expiry > 0 && getTimestamp() - dataStorage[command[1]].setTime > dataStorage[command[1]].expiry)
         {
           response = "$-1\r\n";
-          storage.erase(command[1]);
+          dataStorage.erase(command[1]);
         }
         else
-          response = "$" + std::to_string(storage[command[1]].value.size()) + "\r\n" + storage[command[1]].value + "\r\n";
+          response = "$" + std::to_string(dataStorage[command[1]].value.size()) + "\r\n" + dataStorage[command[1]].value + "\r\n";
       }
       else
         response = "$-1\r\n";
+    }
+    else if (cmd == "RPUSH" && command.size() >= 3)
+    {
+      listStorage[command[1]].list.push_front(command[2]);
+      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
