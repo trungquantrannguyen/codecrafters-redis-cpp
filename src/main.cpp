@@ -160,6 +160,14 @@ void handleClient(int client_fd)
       }
       response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
+    else if (cmd == "LPUSH" && command.size() >= 3)
+    {
+      for (int i = 2; i < command.size(); i++)
+      {
+        listStorage[command[1]].list.push_front(command[i]);
+      }
+      response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+    }
     else if (cmd == "LRANGE" && command.size() >= 4)
     {
       if (listStorage[command[1]].list.empty() == 0)
