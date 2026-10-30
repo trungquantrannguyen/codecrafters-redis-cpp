@@ -153,7 +153,7 @@ void handleClient(int client_fd)
     }
     else if (cmd == "RPUSH" && command.size() >= 3)
     {
-      for (int i = 2; i < command.size() - 1; i++)
+      for (int i = 2; i < command.size(); i++)
       {
         listStorage[command[1]].list.push_front(command[i]);
       }
