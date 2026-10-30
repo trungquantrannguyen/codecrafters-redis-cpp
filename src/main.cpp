@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <list>
 #include <variant>
+#include <iterator>
 
 struct KeyData
 {
@@ -158,6 +159,39 @@ void handleClient(int client_fd)
         listStorage[command[1]].list.push_front(command[i]);
       }
       response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
+    }
+    else if (cmd == "LRANGE" && command.size() >= 4)
+    {
+      if (!listStorage[command[1]].list.empty())
+      {
+        std::list<std::string> dataList = listStorage[command[1]].list;
+        std::string key = command[1];
+        int start = std::stoi(command[2]);
+        int stop = std::stoi(command[3]);
+        if (stop >= dataList.size())
+        {
+          stop = dataList.size();
+          if (start < dataList.size() && start < stop)
+          {
+            auto first = std::next(dataList.begin(), start);
+            auto last = std::next(dataList.begin(), stop);
+            std::list<std::string> subLists(first, last);
+            response = "*" + std::to_string(subLists.size()) + "\r\n";
+            for (std::string subList : subLists)
+            {
+              response = +"$1\r\n" + subList + "\r\n";
+            }
+          }
+          else
+          {
+            response = "*0\r\n";
+          }
+        }
+      }
+      else
+      {
+        response = "*0\r\n";
+      }
     }
 
     send(client_fd, response.c_str(), response.size(), 0);
