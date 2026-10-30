@@ -156,7 +156,7 @@ void handleClient(int client_fd)
     {
       for (int i = 2; i < command.size(); i++)
       {
-        listStorage[command[1]].list.push_front(command[i]);
+        listStorage[command[1]].list.push_back(command[i]);
       }
       response = ":" + std::to_string(listStorage[command[1]].list.size()) + "\r\n";
     }
