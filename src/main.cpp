@@ -181,6 +181,8 @@ void handleClient(int client_fd)
             {
               response = +"$1\r\n" + subList + "\r\n";
             }
+
+            printf("Response array: %s", response);
           }
           else
           {
