@@ -178,8 +178,9 @@ void handleClient(int client_fd)
           {
             stop = data.size();
           }
-          std::cout << "start" << start;
-          std::cout << "stop" << stop;
+          std::cout << "size" << data.size() << "\n";
+          std::cout << "start" << start << "\n";
+          std::cout << "stop" << stop << "\n";
           auto first = std::next(dataList.begin(), start);
           auto last = std::next(dataList.begin(), stop);
 
