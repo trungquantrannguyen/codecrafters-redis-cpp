@@ -170,10 +170,9 @@ void handleClient(int client_fd)
     }
     else if (cmd == "LPOP" && command.size() >= 2)
     {
-      int remove_amout = std::stoi(command[2]);
-      std::cout << "remove_amout" << remove_amout;
-      if (std::stoi(command[2]) == 0)
-        remove_amout = 1;
+      int remove_amout = 1;
+      if (command.size() == 3)
+        remove_amout = std::stoi(command[2]);
 
       if (remove_amout > list_storage[command[1]].list.size())
         remove_amout = list_storage[command[1]].list.size();
@@ -216,9 +215,6 @@ void handleClient(int client_fd)
           {
             last = std::next(dataList.begin(), dataList.size());
           }
-          std::cout << "Size" << dataList.size() << "\n";
-          std::cout << "start" << start << "\n";
-          std::cout << "stop" << stop << "\n";
 
           std::list<std::string> subLists(first, last);
           response = "*" + std::to_string(subLists.size()) + "\r\n";
