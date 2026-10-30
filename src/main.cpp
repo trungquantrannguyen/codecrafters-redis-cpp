@@ -175,7 +175,7 @@ void handleClient(int client_fd)
         if (start < dataList.size() && start < stop)
         {
           auto first = std::next(dataList.begin(), start);
-          auto last = std::next(dataList.begin(), stop);
+          auto last = std::next(dataList.begin(), stop + 1);
           std::list<std::string> subLists(first, last);
           response = "*" + std::to_string(subLists.size()) + "\r\n";
           for (std::string subList : subLists)
