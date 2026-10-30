@@ -171,23 +171,23 @@ void handleClient(int client_fd)
         if (stop >= dataList.size())
         {
           stop = dataList.size();
-          if (start < dataList.size() && start < stop)
+        }
+        if (start < dataList.size() && start < stop)
+        {
+          auto first = std::next(dataList.begin(), start);
+          auto last = std::next(dataList.begin(), stop);
+          std::list<std::string> subLists(first, last);
+          response = "*" + std::to_string(subLists.size()) + "\r\n";
+          for (std::string subList : subLists)
           {
-            auto first = std::next(dataList.begin(), start);
-            auto last = std::next(dataList.begin(), stop);
-            std::list<std::string> subLists(first, last);
-            response = "*" + std::to_string(subLists.size()) + "\r\n";
-            for (std::string subList : subLists)
-            {
-              response = +"$1\r\n" + subList + "\r\n";
-            }
+            response = +"$1\r\n" + subList + "\r\n";
+          }
 
-            printf("Response array: %s", response);
-          }
-          else
-          {
-            response = "*0\r\n";
-          }
+          printf("Response array: %s", response);
+        }
+        else
+        {
+          response = "*0\r\n";
         }
       }
       else
